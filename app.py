@@ -9,7 +9,7 @@ st.write(
     """
     Adjust the parameters below to see how they impact the profit curve.
     The tool calculates potential profit based on demand, cost structure, 
-    and specified price, and displays the optimal pricing point.
+    and specified price points, and displays the optimal pricing point.
     """
 )
 
@@ -28,10 +28,18 @@ max_price = st.slider('Max Price (€):', min_value=1, max_value=500, value=200,
 fixed_cost = st.slider('Fixed Cost (€):', min_value=0, max_value=50000, value=10000, step=1000)
 variable_cost = st.slider('Variable Cost (€):', min_value=1, max_value=200, value=50, step=1)
 price_elasticity = st.slider('Price Elasticity:', min_value=0.1, max_value=2.0, value=1.0, step=0.1)
-specified_price = st.number_input('Specified Price (€):', value=150)
+
+# Let the user choose the number of specified price points
+num_price_points = st.slider('Number of Specified Prices:', min_value=1, max_value=5, value=1)
+specified_prices = []
+
+# Create input fields for the specified price points
+for i in range(num_price_points):
+    specified_price = st.number_input(f'Specified Price {i+1} (€):', value=150 + i * 10)
+    specified_prices.append(specified_price)
 
 # Function to calculate profit, gross margin, and display results
-def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_elasticity, specified_price):
+def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_elasticity, specified_prices):
     # Price range to test (from variable cost to max price)
     prices = np.linspace(variable_cost, max_price, 100)
     
@@ -44,27 +52,7 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
     total_costs = (variable_cost * sales_quantity) + fixed_cost
     profit = total_revenue - total_costs
 
-    # Calculating gross margin at the specified price
-    if specified_price > variable_cost:
-        gross_margin = (specified_price - variable_cost) / specified_price * 100
-    else:
-        gross_margin = 0
-
-    # Determine deviation from price acceptance range
-    if specified_price < min_price:
-        price_deviation = f"Price is below the minimum acceptable price."
-    elif specified_price > max_price:
-        price_deviation = f"Price is above the maximum acceptable price."
-    else:
-        price_deviation = f"Price is within the acceptable range."
-
-    # Calculate profit at the specified price
-    specified_profit = (
-        specified_price * (max_sales_quantity + demand_slope * (specified_price - min_price))
-        - (fixed_cost + variable_cost * (max_sales_quantity + demand_slope * (specified_price - min_price)))
-    )
-
-    # Plotting the profit curve and demand curve
+    # Prepare the plot
     fig, ax1 = plt.subplots(figsize=(10, 6))
 
     # Profit curve
@@ -91,28 +79,31 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
     # Marking the variable cost on the x-axis with a bold dashed line
     ax1.axvline(x=variable_cost, color='k', linestyle='-', linewidth=2, label=f'Variable Cost: €{variable_cost}')
 
-    # Mark the specified price on the graph
-    ax1.scatter(specified_price, specified_profit, color='magenta', zorder=5, label=f'Specified Price: €{specified_price:.2f}')
+    # Iterate through specified prices and calculate corresponding profits
+    for i, specified_price in enumerate(specified_prices):
+        # Calculate sales quantity and profit at each specified price
+        sales_quantity_at_specified = max_sales_quantity + demand_slope * (specified_price - min_price)
+        specified_profit = (
+            specified_price * sales_quantity_at_specified
+            - (fixed_cost + variable_cost * sales_quantity_at_specified)
+        )
+        
+        # Plot specified price points on the graph
+        ax1.scatter(specified_price, specified_profit, color='magenta', zorder=5, label=f'Specified Price {i+1}: €{specified_price:.2f}')
+        ax1.axvline(x=specified_price, color='magenta', linestyle='--', linewidth=2, label=f'Specified Price {i+1} Line: €{specified_price:.2f}')
+        
+        # Shade the area to the right of the specified price and under the demand curve
+        right_prices = prices[prices >= specified_price]
+        right_sales_quantity = sales_quantity[prices >= specified_price]
+        ax2.fill_between(right_prices, right_sales_quantity, color='orange', alpha=0.3, label=f'Shaded Area for Price {i+1}' if i == 0 else "")
 
-    # Create vertical lines for the optimal price and specified price
-    ax1.axvline(x=optimal_price, color='red', linestyle='--', linewidth=2, label=f'Optimal Price Line: €{optimal_price:.2f}')
-    ax1.axvline(x=specified_price, color='magenta', linestyle='--', linewidth=2, label=f'Specified Price Line: €{specified_price:.2f}')
-
-    # Shade the area to the right of the specified price and under the demand curve
-    right_prices = prices[prices >= specified_price]
-    right_sales_quantity = sales_quantity[prices >= specified_price]
-    ax2.fill_between(right_prices, right_sales_quantity, color='orange', alpha=0.3, label='Shaded Triangle Area')
-
-    # Add a text box for the specified price details
-    hover_text = (f"At the specified price (€{specified_price:.2f}):\n"
-                  f" - Gross Margin: {gross_margin:.2f}%\n"
-                  f" - Price Acceptance Range Deviation: {price_deviation}")
-
-    ax1.annotate(hover_text,
-                 xy=(specified_price, specified_profit), 
-                 xytext=(specified_price + 10, specified_profit + 5000),
-                 bbox=dict(boxstyle="round,pad=0.3", edgecolor='black', facecolor='lightyellow'),
-                 arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.5"))
+    # Add hover text for specified prices
+    for i, specified_price in enumerate(specified_prices):
+        ax1.annotate(f"Price {i+1}: €{specified_price}\nProfit: €{specified_profit:.2f}",
+                     xy=(specified_price, specified_profit), 
+                     xytext=(specified_price + 10, specified_profit + 5000),
+                     bbox=dict(boxstyle="round,pad=0.3", edgecolor='black', facecolor='lightyellow'),
+                     arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.5"))
 
     # Title and labels
     fig.suptitle('Profit Curve and Demand Curve vs. Price')
@@ -123,12 +114,11 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
     # Show the plots
     st.pyplot(fig)
 
-    # Display additional results
-    st.write(f"**Optimal Price:** €{optimal_price:.2f}")
-    st.write(f"**Optimal Profit:** €{optimal_profit:.2f}")
-    st.write(f"**Specified Price Profit:** €{specified_profit:.2f}")
-    st.write(f"**Gross Margin at Specified Price:** {gross_margin:.2f}%")
-    st.write(f"**Price Deviation Message:** {price_deviation}")
+    # Display additional results for each specified price
+    for i, specified_price in enumerate(specified_prices):
+        st.write(f"**Specified Price {i+1}:** €{specified_price:.2f}")
+        st.write(f"**Sales Quantity at Specified Price {i+1}:** {sales_quantity_at_specified:.2f} units")
+        st.write(f"**Profit at Specified Price {i+1}:** €{specified_profit:.2f}")
 
 # Call the function to update and display the profit curve
-update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_elasticity, specified_price)
+update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_elasticity, specified_prices)
