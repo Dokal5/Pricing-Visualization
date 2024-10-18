@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 
-# Streamlit sliders for user input
+# Streamlit title and description
 st.title("Profit Curve and Demand Curve Analysis")
 st.write(
     """
@@ -14,6 +14,15 @@ st.write(
 )
 
 # Define UI elements using Streamlit
+# User-defined estimates for market size (TAM) and penetration rate
+market_size = st.number_input('Total Addressable Market (TAM):', min_value=1000, value=10000, step=500)
+penetration_rate = st.slider('Expected Market Penetration Rate (%):', min_value=1.0, max_value=100.0, value=10.0, step=0.1)
+
+# Calculate max sales quantity based on market size and penetration rate
+max_sales_quantity = int(market_size * (penetration_rate / 100))
+min_sales_quantity = st.slider('Min Sales Quantity at Max Price:', min_value=100, max_value=max_sales_quantity, value=200, step=50)
+
+# Other input sliders for price and costs
 min_price = st.slider('Min Price (€):', min_value=1, max_value=500, value=80, step=1)
 max_price = st.slider('Max Price (€):', min_value=1, max_value=500, value=200, step=1)
 fixed_cost = st.slider('Fixed Cost (€):', min_value=0, max_value=50000, value=10000, step=1000)
@@ -27,8 +36,6 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
     prices = np.linspace(variable_cost, max_price, 100)
     
     # Demand curve with price elasticity affecting the slope
-    max_sales_quantity = 1000  # Maximum sales at minimum price
-    min_sales_quantity = 200  # Minimum sales at maximum price
     demand_slope = (min_sales_quantity - max_sales_quantity) / (max_price - min_price) * price_elasticity
     sales_quantity = max_sales_quantity + demand_slope * (prices - min_price)
 
