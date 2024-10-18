@@ -20,7 +20,7 @@ penetration_rate = st.slider('Expected Market Penetration Rate (%):', min_value=
 
 # Calculate max sales quantity based on market size and penetration rate
 max_sales_quantity = int(market_size * (penetration_rate / 100))
-min_sales_quantity = st.slider('Min Sales Quantity at Max Price:', min_value=100, max_value=max_sales_quantity, value=200, step=50)
+min_sales_quantity = st.slider('Total Addressable Market (TAM):', min_value=100, max_value=max_sales_quantity, value=200, step=50)
 
 # Other input sliders for price and costs
 min_price = st.slider('Min Price (€):', min_value=1, max_value=500, value=80, step=1)
