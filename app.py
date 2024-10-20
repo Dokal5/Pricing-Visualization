@@ -132,7 +132,10 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
     for i, specified_price in enumerate(specified_prices):
         # Calculate sales quantity at each specified price
         sales_quantity_at_specified = max_sales_quantity + demand_slope * (specified_price - min_price)
-        sales_quantity_at_specified = max(sales_quantity_at_specified, 0)  # Ensure it is not less than zero
+        
+        # Adjust sales quantity for specified price if it exceeds max_price
+        if specified_price > max_price:
+            sales_quantity_at_specified = 0
 
         # Calculate profit at each specified price
         specified_profit = (
