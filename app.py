@@ -4,32 +4,22 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 # Streamlit title and description
-st.title("Profit Curve and Demand Curve Analysis with Market Size Dynamics")
+st.title("Profit Curve and Demand Curve Analysis")
 st.write(
     """
     Adjust the parameters below to see how they impact the profit curve.
     The tool calculates potential profit based on demand, cost structure, 
     and specified price points, and displays the optimal pricing point.
-    This version includes market size dynamics, allowing you to see how changes in the market 
-    size over time influence demand and profitability.
     """
 )
 
 # Define UI elements using Streamlit
 # User-defined estimates for market size (TAM) and penetration rate
-initial_market_size = st.number_input('Initial Total Addressable Market (TAM):', min_value=1000, value=10000, step=500)
-market_growth_rate = st.slider('Annual Market Growth Rate (%):', min_value=0.0, max_value=20.0, value=5.0, step=0.1)
-years = st.slider('Number of Years for Market Growth Simulation:', min_value=1, max_value=10, value=3)
-
-# Calculate projected market size over the selected number of years
-market_sizes = [initial_market_size * (1 + market_growth_rate / 100) ** year for year in range(years)]
-st.write(f"Projected Market Sizes over {years} years:", market_sizes)
-
-# User-defined penetration rate
+market_size = st.number_input('Total Addressable Market (TAM):', min_value=1000, value=10000, step=500)
 penetration_rate = st.slider('Expected Market Penetration Rate (%):', min_value=1.0, max_value=100.0, value=10.0, step=0.1)
 
-# Calculate max sales quantities based on market size and penetration rate over time
-max_sales_quantities = [int(size * (penetration_rate / 100)) for size in market_sizes]
+# Calculate max sales quantity based on market size and penetration rate
+max_sales_quantity = int(market_size * (penetration_rate / 100))
 min_sales_quantity = 200  # Set as a constant or adjust based on your model needs.
 
 # Input sliders for price and costs
@@ -63,39 +53,36 @@ for i in range(num_price_points):
 
 # Function to calculate profit, gross margin, and display results
 def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_elasticity, specified_prices):
+    # Price range to test (from variable cost to max price)
+    prices = np.linspace(variable_cost, max_price, 100)
+    
+    # Demand curve with price elasticity affecting the slope
+    demand_slope = (min_sales_quantity - max_sales_quantity) / (max_price - min_price) * price_elasticity
+    sales_quantity = max_sales_quantity + demand_slope * (prices - min_price)
+
+    # Calculating total revenue, total costs, and profit
+    total_revenue = prices * sales_quantity
+    total_costs = (variable_cost * sales_quantity) + fixed_cost
+    profit = total_revenue - total_costs
+
+    # Prepare the plot
     fig, ax1 = plt.subplots(figsize=(10, 6))
 
-    # Loop through each year and plot the results
-    for year, max_sales_quantity in enumerate(max_sales_quantities):
-        # Price range to test (from variable cost to max price)
-        prices = np.linspace(variable_cost, max_price, 100)
-        
-        # Demand curve with price elasticity affecting the slope
-        demand_slope = (min_sales_quantity - max_sales_quantity) / (max_price - min_price) * price_elasticity
-        sales_quantity = max_sales_quantity + demand_slope * (prices - min_price)
-
-        # Calculating total revenue, total costs, and profit
-        total_revenue = prices * sales_quantity
-        total_costs = (variable_cost * sales_quantity) + fixed_cost
-        profit = total_revenue - total_costs
-
-        # Profit curve for each year
-        ax1.plot(prices, profit, label=f'Year {year + 1} Profit Curve', linestyle='--', alpha=0.7)
-        
-        # Highlighting the optimal price point for each year
-        optimal_price = prices[np.argmax(profit)]
-        optimal_profit = np.max(profit)
-        ax1.scatter(optimal_price, optimal_profit, label=f'Year {year + 1} Optimal Price: €{optimal_price:.2f}', zorder=5)
-
-    # Basic plot setup
+    # Profit curve
+    ax1.plot(prices, profit, label='Profit Curve', color='b')
     ax1.axhline(0, color='black', linewidth=0.5)  # Zero profit line for reference
     ax1.set_xlabel('Price (€)')
     ax1.set_ylabel('Profit (€)', color='b')
     ax1.tick_params(axis='y', labelcolor='b')
 
+    # Highlighting the optimal price point
+    optimal_price = prices[np.argmax(profit)]
+    optimal_profit = np.max(profit)
+    ax1.scatter(optimal_price, optimal_profit, color='r', label=f'Optimal Price: €{optimal_price:.2f}')
+
     # Demand curve on the same plot but different axis
     ax2 = ax1.twinx()
-    ax2.plot(prices, sales_quantity, label='Demand Curve (Final Year)', color='g')
+    ax2.plot(prices, sales_quantity, label='Demand Curve', color='g')
     ax2.set_ylabel('Sales Quantity', color='g')
     ax2.tick_params(axis='y', labelcolor='g')
 
@@ -107,8 +94,8 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
 
     # Iterate through specified prices and calculate corresponding profits
     for i, specified_price in enumerate(specified_prices):
-        # Calculate sales quantity and profit at each specified price for the final year
-        sales_quantity_at_specified = max_sales_quantities[-1] + demand_slope * (specified_price - min_price)
+        # Calculate sales quantity and profit at each specified price
+        sales_quantity_at_specified = max_sales_quantity + demand_slope * (specified_price - min_price)
         specified_profit = (
             specified_price * sales_quantity_at_specified
             - (fixed_cost + variable_cost * sales_quantity_at_specified)
@@ -118,11 +105,24 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
         ax1.scatter(specified_price, specified_profit, color='magenta', zorder=5, label=f'Specified Price {i+1}: €{specified_price:.2f}')
         ax1.axvline(x=specified_price, color='magenta', linestyle='--', linewidth=2, label=f'Specified Price {i+1} Line: €{specified_price:.2f}')
         
+        # Shade the area to the right of the specified price and under the demand curve
+        right_prices = prices[prices >= specified_price]
+        right_sales_quantity = sales_quantity[prices >= specified_price]
+        ax2.fill_between(right_prices, right_sales_quantity, color='orange', alpha=0.3, label=f'Shaded Area for Price {i+1}' if i == 0 else "")
+
+    # Add hover text for specified prices
+    for i, specified_price in enumerate(specified_prices):
+        ax1.annotate(f"Price {i+1}: €{specified_price}\nProfit: €{specified_profit:.2f}",
+                     xy=(specified_price, specified_profit), 
+                     xytext=(specified_price + 10, specified_profit + 5000),
+                     bbox=dict(boxstyle="round,pad=0.3", edgecolor='black', facecolor='lightyellow'),
+                     arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.5"))
+
     # Title and labels
-    fig.suptitle('Profit Curve and Demand Curve vs. Price with Market Size Dynamics')
+    fig.suptitle('Profit Curve and Demand Curve vs. Price')
     ax1.grid(True)
-    ax1.legend(loc='upper left', bbox_to_anchor=(0, -0.2), title="Profit Curve Legend")
-    ax2.legend(loc='upper right', bbox_to_anchor=(1, -0.2), title="Demand Curve Legend")
+    ax1.legend(loc='upper left', bbox_to_anchor=(0, -0.1), title="Profit Curve Legend")
+    ax2.legend(loc='upper right', bbox_to_anchor=(1, -0.1), title="Demand Curve Legend")
 
     # Show the plots
     st.pyplot(fig)
@@ -130,8 +130,8 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
     # Display additional results for each specified price
     for i, specified_price in enumerate(specified_prices):
         st.write(f"**Specified Price {i+1}:** €{specified_price:.2f}")
-        st.write(f"**Sales Quantity at Specified Price {i+1} (Final Year):** {sales_quantity_at_specified:.2f} units")
-        st.write(f"**Profit at Specified Price {i+1} (Final Year):** €{specified_profit:.2f}")
+        st.write(f"**Sales Quantity at Specified Price {i+1}:** {sales_quantity_at_specified:.2f} units")
+        st.write(f"**Profit at Specified Price {i+1}:** €{specified_profit:.2f}")
 
 # Call the function to update and display the profit curve
 update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_elasticity, specified_prices)
