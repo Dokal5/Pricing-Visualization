@@ -4,12 +4,14 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 # Streamlit title and description
-st.title("Profit Curve and Demand Curve Analysis")
+st.title("Profit Curve and Demand Curve Analysis with Break-even Analysis")
 st.write(
     """
     Adjust the parameters below to see how they impact the profit curve.
     The tool calculates potential profit based on demand, cost structure, 
     and specified price points, and displays the optimal pricing point.
+    It also includes a break-even analysis to help you understand at what point 
+    your revenue covers all costs.
     """
 )
 
@@ -65,6 +67,21 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
     total_costs = (variable_cost * sales_quantity) + fixed_cost
     profit = total_revenue - total_costs
 
+    # Break-even analysis
+    break_even_price = None
+    break_even_quantity = None
+
+    for price in prices:
+        quantity = max_sales_quantity + demand_slope * (price - min_price)
+        if quantity > 0:
+            revenue = price * quantity
+            costs = fixed_cost + (variable_cost * quantity)
+            profit_at_price = revenue - costs
+            if profit_at_price >= 0:
+                break_even_price = price
+                break_even_quantity = quantity
+                break
+
     # Prepare the plot
     fig, ax1 = plt.subplots(figsize=(10, 6))
 
@@ -92,31 +109,12 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
     # Marking the variable cost on the x-axis with a bold dashed line
     ax1.axvline(x=variable_cost, color='k', linestyle='-', linewidth=2, label=f'Variable Cost: €{variable_cost}')
 
-    # Iterate through specified prices and calculate corresponding profits
-    for i, specified_price in enumerate(specified_prices):
-        # Calculate sales quantity and profit at each specified price
-        sales_quantity_at_specified = max_sales_quantity + demand_slope * (specified_price - min_price)
-        specified_profit = (
-            specified_price * sales_quantity_at_specified
-            - (fixed_cost + variable_cost * sales_quantity_at_specified)
-        )
-        
-        # Plot specified price points on the graph
-        ax1.scatter(specified_price, specified_profit, color='magenta', zorder=5, label=f'Specified Price {i+1}: €{specified_price:.2f}')
-        ax1.axvline(x=specified_price, color='magenta', linestyle='--', linewidth=2, label=f'Specified Price {i+1} Line: €{specified_price:.2f}')
-        
-        # Shade the area to the right of the specified price and under the demand curve
-        right_prices = prices[prices >= specified_price]
-        right_sales_quantity = sales_quantity[prices >= specified_price]
-        ax2.fill_between(right_prices, right_sales_quantity, color='orange', alpha=0.3, label=f'Shaded Area for Price {i+1}' if i == 0 else "")
-
-    # Add hover text for specified prices
-    for i, specified_price in enumerate(specified_prices):
-        ax1.annotate(f"Price {i+1}: €{specified_price}\nProfit: €{specified_profit:.2f}",
-                     xy=(specified_price, specified_profit), 
-                     xytext=(specified_price + 10, specified_profit + 5000),
-                     bbox=dict(boxstyle="round,pad=0.3", edgecolor='black', facecolor='lightyellow'),
-                     arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.5"))
+    # Plot the break-even point if available
+    if break_even_price is not None and break_even_quantity is not None:
+        ax1.scatter(break_even_price, 0, color='orange', label=f'Break-even Price: €{break_even_price:.2f}')
+        ax2.scatter(break_even_price, break_even_quantity, color='orange', label=f'Break-even Quantity: {break_even_quantity:.2f}')
+        st.write(f"**Break-even Price:** €{break_even_price:.2f}")
+        st.write(f"**Break-even Quantity:** {break_even_quantity:.2f} units")
 
     # Title and labels
     fig.suptitle('Profit Curve and Demand Curve vs. Price')
@@ -129,9 +127,14 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
 
     # Display additional results for each specified price
     for i, specified_price in enumerate(specified_prices):
+        sales_quantity_at_specified = max_sales_quantity + demand_slope * (specified_price - min_price)
+        specified_profit = (
+            specified_price * sales_quantity_at_specified
+            - (fixed_cost + variable_cost * sales_quantity_at_specified)
+        )
         st.write(f"**Specified Price {i+1}:** €{specified_price:.2f}")
         st.write(f"**Sales Quantity at Specified Price {i+1}:** {sales_quantity_at_specified:.2f} units")
         st.write(f"**Profit at Specified Price {i+1}:** €{specified_profit:.2f}")
 
-# Call the function to update and display the profit curve
+# Call the function to update and display the profit curve with break-even analysis
 update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_elasticity, specified_prices)
