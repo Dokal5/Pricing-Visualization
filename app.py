@@ -134,11 +134,16 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
         ax1.axvline(x=specified_price, color='magenta', linestyle='--', linewidth=1.5, 
                     label=f'Specified Price {i+1}: €{specified_price:.2f}')
 
-    # Marking competitor prices if any are provided
+    # Plot competitor prices as points on the demand curve if any are provided
     if add_competitors:
-        for i, competitor in enumerate(competitor_prices):
-            ax1.axvline(x=competitor['price'], color='orange', linestyle=':', linewidth=2, 
-                        label=f"{competitor['brand']} - {competitor['spec']}: €{competitor['price']:.2f}")
+        for competitor in competitor_prices:
+            # Calculate the sales quantity at the competitor's price using the demand curve formula
+            comp_quantity = max_sales_quantity + demand_slope * (competitor['price'] - min_price)
+            comp_quantity = max(comp_quantity, 0)  # Ensure it is not less than zero
+            ax2.plot(
+                competitor['price'], comp_quantity, 'o', color='orange', 
+                label=f"{competitor['brand']} - {competitor['spec']}: €{competitor['price']:.2f}"
+            )
 
     # Plot the break-even point if available
     if break_even_price is not None and break_even_quantity is not None:
@@ -159,28 +164,4 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
     # Display additional results for each specified price
     for i, specified_price in enumerate(specified_prices):
         # Calculate sales quantity at each specified price
-        sales_quantity_at_specified = max_sales_quantity + demand_slope * (specified_price - min_price)
-        
-        # Adjust sales quantity for specified price if it exceeds max_price
-        if specified_price > max_price:
-            sales_quantity_at_specified = 0
-
-        # Calculate profit at each specified price
-        specified_profit = (
-            specified_price * sales_quantity_at_specified
-            - (fixed_cost + variable_cost * sales_quantity_at_specified)
-        )
-        
-        # Display the results for each specified price
-        st.write(f"**Specified Price {i+1}:** €{specified_price:.2f}")
-        st.write(f"**Sales Quantity at Specified Price {i+1}:** {sales_quantity_at_specified:.2f} units")
-        st.write(f"**Profit at Specified Price {i+1}:** €{specified_profit:.2f}")
-
-    # Display competitor prices if they were added
-    if add_competitors:
-        st.write("### Competitor Prices:")
-        for competitor in competitor_prices:
-            st.write(f"- **{competitor['brand']}** - {competitor['spec']}: €{competitor['price']:.2f}")
-
-# Call the function to update and display the profit curve with break-even analysis
-update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_elasticity, specified_prices, competitor_prices)
+        sales_quantity_at_specified = max_sales_quantity + demand_slope * (specified_price - min
