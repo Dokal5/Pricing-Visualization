@@ -9,7 +9,7 @@ st.write(
     """
     This tool helps analyze price sensitivity and survey data for pricing decisions.
     Input your market and survey details, competitor pricing, and visualize demand and 
-    profit curves for a single market segment.
+    profit curves for a single market segment. You can also input a price to see the break-even quantity.
     """
 )
 
@@ -67,8 +67,19 @@ for i in range(num_competitors):
         'price': competitor_price
     })
 
-# SECTION 5: Calculate and Visualize Demand and Profit Curves with PMC, PME, and Competitors
-st.header("5. Demand and Profit Curves with PMC, PME, and Competitors")
+# SECTION 5: User-Determined Price and Break-Even Analysis
+st.header("5. Set Your Price and Calculate Break-Even Quantity")
+user_price = st.number_input('Enter Your Price Setting (€):', min_value=0.0, value=100.0)
+
+# Calculate break-even quantity: fixed costs divided by contribution margin (price - variable cost)
+if user_price > variable_cost:
+    break_even_quantity = fixed_cost / (user_price - variable_cost)
+    st.write(f"**Break-Even Quantity at €{user_price:.2f}:** {break_even_quantity:.2f} units")
+else:
+    st.write("The price must be greater than the variable cost to calculate the break-even point.")
+
+# SECTION 6: Calculate and Visualize Demand and Profit Curves with PMC, PME, and Competitors
+st.header("6. Demand and Profit Curves with PMC, PME, and Competitors")
 
 # Function to calculate demand and profit for the segment
 def calculate_demand_and_profit(prices):
@@ -99,17 +110,16 @@ ax1.plot(prices, sales_quantity, label=f"Demand for {segment_name}", linestyle='
 
 # Calculate the optimal price and plot profit curve
 optimal_price = prices[np.argmax(profit)]
-optimal_profit = np.max(profit)
 ax1.plot(prices, profit, label=f"Profit for {segment_name}", linestyle='-')
-ax1.axvline(x=optimal_price, color='blue', linestyle='-', linewidth=1.5, label=f"Optimal Price: €{optimal_price:.2f}")
+ax1.axvline(x=optimal_price, color='red', linestyle='-', linewidth=1.5, label=f"Optimal Price: €{optimal_price:.2f}")
 
 # Highlight PMC and PME on the plot
 ax1.axvline(x=pmc, color='orange', linestyle='--', label=f"PMC: €{pmc}")
 ax1.axvline(x=pme, color='purple', linestyle='--', label=f"PME: €{pme}")
 
 # Draw shaded areas for the confidence intervals of PMC and PME, extending vertically across the entire plot
-ax1.fill_betweenx([0, max(sales_quantity) * 1.5], confidence_interval_pmc[0], confidence_interval_pmc[1], color='orange', alpha=0.2, label='Confidence Interval for PMC')
-ax1.fill_betweenx([0, max(sales_quantity) * 1.5], confidence_interval_pme[0], confidence_interval_pme[1], color='purple', alpha=0.2, label='Confidence Interval for PME')
+ax1.fill_betweenx([0, max(sales_quantity) * 2], confidence_interval_pmc[0], confidence_interval_pmc[1], color='orange', alpha=0.2, label='Confidence Interval for PMC')
+ax1.fill_betweenx([0, max(sales_quantity) * 2], confidence_interval_pme[0], confidence_interval_pme[1], color='purple', alpha=0.2, label='Confidence Interval for PME')
 
 # Plot competitor prices as points
 for competitor in competitors:
@@ -134,7 +144,3 @@ st.pyplot(fig)
 # Display additional results for the segment
 st.write(f"### Analysis for {segment_name}")
 st.write(f"**Population Size:** {population_size}")
-st.write(f"**Estimated Max Sales Quantity (10% Hypothetical Penetration):** {int(population_size * 0.1)} units")
-st.write(f"**Optimal Price:** €{optimal_price:.2f}")
-st.write(f"**Estimated Sales Quantity at Optimal Price:** {sales_quantity[np.argmax(profit)]:.2f} units")
-st.write(f"**Profit at Optimal Price:** €{optimal_profit:.2f}")
