@@ -131,6 +131,17 @@ for competitor in competitors:
                  arrowprops=dict(arrowstyle="->", color='green'),
                  bbox=dict(boxstyle="round,pad=0.3", edgecolor='black', facecolor='lightyellow'))
 
+# Highlight user-determined price and display break-even information
+if user_price > variable_cost:
+    ax1.axvline(x=user_price, color='blue', linestyle='--', linewidth=1.5, label=f"Your Price: €{user_price:.2f}")
+    ax1.scatter(user_price, break_even_quantity, color='blue', zorder=5)
+    ax1.annotate(f"Break-Even Qty:\n{break_even_quantity:.2f} units",
+                 xy=(user_price, break_even_quantity), 
+                 xytext=(user_price + 5, break_even_quantity + max(sales_quantity) * 0.1),
+                 textcoords='data',
+                 bbox=dict(boxstyle="round,pad=0.3", edgecolor='blue', facecolor='lightyellow'),
+                 arrowprops=dict(arrowstyle="->", color='blue'))
+
 # Formatting the plot
 ax1.set_xlabel('Price (€)')
 ax1.set_ylabel('Quantity / Profit (€)')
