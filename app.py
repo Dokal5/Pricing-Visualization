@@ -107,6 +107,10 @@ ax1.scatter(optimal_price, optimal_profit, color='r', label=f"Optimal Price: €
 ax1.axvline(x=pmc, color='orange', linestyle='--', label=f"PMC: €{pmc}")
 ax1.axvline(x=pme, color='purple', linestyle='--', label=f"PME: €{pme}")
 
+# Draw shaded areas for the confidence intervals of PMC and PME
+ax1.fill_betweenx([0, max(sales_quantity)], confidence_interval_pmc[0], confidence_interval_pmc[1], color='orange', alpha=0.2, label='Confidence Interval for PMC')
+ax1.fill_betweenx([0, max(sales_quantity)], confidence_interval_pme[0], confidence_interval_pme[1], color='purple', alpha=0.2, label='Confidence Interval for PME')
+
 # Plot competitor prices as points
 for competitor in competitors:
     ax1.scatter(competitor['price'], 0, color='green', label=f"{competitor['brand']} ({competitor['spec']}): €{competitor['price']}", zorder=5)
