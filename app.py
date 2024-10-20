@@ -141,7 +141,7 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
             comp_quantity = max_sales_quantity + demand_slope * (competitor['price'] - min_price)
             comp_quantity = max(comp_quantity, 0)  # Ensure it is not less than zero
             ax2.plot(
-                competitor['price'], comp_quantity, 'o', color='orange', 
+                competitor['price'], comp_quantity, 'o', color='purple', 
                 label=f"{competitor['brand']} - {competitor['spec']}: €{competitor['price']:.2f}"
             )
 
