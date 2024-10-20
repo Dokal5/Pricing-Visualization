@@ -101,15 +101,15 @@ ax1.plot(prices, sales_quantity, label=f"Demand for {segment_name}", linestyle='
 optimal_price = prices[np.argmax(profit)]
 optimal_profit = np.max(profit)
 ax1.plot(prices, profit, label=f"Profit for {segment_name}", linestyle='-')
-ax1.scatter(optimal_price, optimal_profit, color='r', label=f"Optimal Price: €{optimal_price:.2f}")
+ax1.axvline(x=optimal_price, color='blue', linestyle='-', linewidth=1.5, label=f"Optimal Price: €{optimal_price:.2f}")
 
 # Highlight PMC and PME on the plot
 ax1.axvline(x=pmc, color='orange', linestyle='--', label=f"PMC: €{pmc}")
 ax1.axvline(x=pme, color='purple', linestyle='--', label=f"PME: €{pme}")
 
-# Draw shaded areas for the confidence intervals of PMC and PME
-ax1.fill_betweenx([0, max(sales_quantity)], confidence_interval_pmc[0], confidence_interval_pmc[1], color='orange', alpha=0.2, label='Confidence Interval for PMC')
-ax1.fill_betweenx([0, max(sales_quantity)], confidence_interval_pme[0], confidence_interval_pme[1], color='purple', alpha=0.2, label='Confidence Interval for PME')
+# Draw shaded areas for the confidence intervals of PMC and PME, extending vertically across the entire plot
+ax1.fill_betweenx([0, max(sales_quantity) * 1.5], confidence_interval_pmc[0], confidence_interval_pmc[1], color='orange', alpha=0.2, label='Confidence Interval for PMC')
+ax1.fill_betweenx([0, max(sales_quantity) * 1.5], confidence_interval_pme[0], confidence_interval_pme[1], color='purple', alpha=0.2, label='Confidence Interval for PME')
 
 # Plot competitor prices as points
 for competitor in competitors:
