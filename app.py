@@ -152,6 +152,8 @@ ax1.legend(loc='upper right')
 # Show the plot in Streamlit
 st.pyplot(fig)
 
-# Display additional results for the segment
-st.write(f"### Analysis for {segment_name}")
-st.write(f"**Population Size:** {population_size}")
+# Display additional questions for user reflection
+if user_price > variable_cost:
+    st.write(f"### Reflection on Your Price Setting")
+    st.write(f"Based on the chosen price point (€{user_price:.2f}), the required break-even quantity is {break_even_quantity:.2f} units.")
+    st.write("**What is your promotion/communication and place/channel strategy that can fulfill this minimum sales target?**")
