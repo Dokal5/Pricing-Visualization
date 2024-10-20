@@ -16,8 +16,11 @@ st.write(
 )
 
 # Define UI elements using Streamlit
-# User-defined estimates for market size (TAM) and penetration rate
+# User-defined estimates for market size (TAM) and price elasticity
 market_size = st.number_input('Total Addressable Market (TAM):', min_value=1000, value=10000, step=500)
+price_elasticity = st.slider('Price Elasticity:', min_value=0.1, max_value=2.0, value=1.0, step=0.1)
+
+# User-defined estimate for penetration rate
 penetration_rate = st.slider('Expected Market Penetration Rate (%):', min_value=1.0, max_value=100.0, value=10.0, step=0.1)
 
 # Calculate max sales quantity based on market size and penetration rate
@@ -29,7 +32,6 @@ min_price = st.slider('Minimum Acceptable Price (€):', min_value=1, max_value=
 max_price = st.slider('Maximum Acceptable Price (€):', min_value=1, max_value=500, value=200, step=1)
 variable_cost = st.slider('Variable Cost per Product/Service (€):', min_value=1, max_value=200, value=50, step=1)
 fixed_cost = st.slider('Fixed Cost (€):', min_value=0, max_value=50000, value=10000, step=1000)
-price_elasticity = st.slider('Price Elasticity:', min_value=0.1, max_value=2.0, value=1.0, step=0.1)
 
 # Let the user choose the number of specified price points
 num_price_points = st.slider('Number of Specified Prices:', min_value=1, max_value=5, value=1)
