@@ -140,9 +140,19 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
             # Calculate the sales quantity at the competitor's price using the demand curve formula
             comp_quantity = max_sales_quantity + demand_slope * (competitor['price'] - min_price)
             comp_quantity = max(comp_quantity, 0)  # Ensure it is not less than zero
+            # Plot the competitor's price as a point on the demand curve
             ax2.plot(
                 competitor['price'], comp_quantity, 'o', color='purple', 
                 label=f"{competitor['brand']} - {competitor['spec']}: €{competitor['price']:.2f}"
+            )
+            # Add an annotation for the competitor's price point
+            ax2.annotate(
+                f"{competitor['brand']}\n{competitor['spec']}\n€{competitor['price']:.2f}",
+                xy=(competitor['price'], comp_quantity),
+                xytext=(competitor['price'] + 5, comp_quantity + 5),
+                textcoords='offset points',
+                bbox=dict(boxstyle="round,pad=0.3", edgecolor='purple', facecolor='lightyellow'),
+                arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=0.2", color='purple')
             )
 
     # Plot the break-even point if available
