@@ -1,28 +1,27 @@
 # Import necessary libraries
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
+import scipy.stats as stats
 import streamlit as st
 
 # Streamlit title and description
-st.title("Segment-Based Profit Curve and Demand Curve Analysis with Van Westendorp Method")
+st.title("Pricing and Price Sensitivity Analysis Tool")
 st.write(
     """
-    Adjust the parameters below to see how they impact the profit and demand curves 
-    for different market segments. This tool also incorporates the Van Westendorp 
-    Price Sensitivity Meter to visualize the Point of Marginal Cheapness (PMC) 
-    and the Point of Marginal Expensiveness (PME).
+    This tool helps analyze price sensitivity and survey data for pricing decisions.
+    Input your survey details to calculate the margin of error, confidence intervals,
+    and visualize demand and profit curves for different market segments.
     """
 )
 
-# SECTION 1: Define Segments and Their Characteristics
+# SECTION 1: Define Market Segments
 st.header("1. Define Market Segments")
 num_segments = st.slider('Number of Segments:', min_value=1, max_value=3, value=2)
 segments = []
 
 for i in range(num_segments):
     segment_name = st.text_input(f'Segment {i+1} Name', value=f'Segment {i+1}')
-    population_size = st.number_input(f'Population Size for {segment_name}:', min_value=100, value=10000, step=500)
+    population_size = st.number_input(f'Population Size for {segment_name}:', min_value=1, value=10000, step=100)
     penetration_rate = st.slider(f'Expected Market Penetration for {segment_name} (%):', min_value=1.0, max_value=100.0, value=10.0, step=0.1)
     price_elasticity = st.slider(f'Price Elasticity for {segment_name}:', min_value=0.1, max_value=3.0, value=1.0, step=0.1)
     
@@ -37,52 +36,45 @@ for i in range(num_segments):
     })
 
 # SECTION 2: Define Costs
-st.header("2. Costs")
+st.header("2. Define Costs")
 variable_cost = st.slider('Variable Cost per Product/Service (€):', min_value=1, max_value=200, value=50, step=1)
 fixed_cost = st.slider('Fixed Cost (€):', min_value=0, max_value=50000, value=10000, step=1000)
 
-# SECTION 3: Van Westendorp Price Sensitivity Analysis
-st.header("3. Van Westendorp Price Sensitivity Analysis")
-price_points = st.multiselect("Select Price Points (€):", options=[50, 70, 100, 130, 150], default=[50, 70, 100, 130, 150])
-survey_data = {
-    "Price (€)": price_points,
-    "% Too Cheap": [st.slider(f"% Too Cheap at {price}€", min_value=0, max_value=100, value=100 - 2 * i) for i, price in enumerate(price_points)],
-    "% Cheap": [st.slider(f"% Cheap at {price}€", min_value=0, max_value=100, value=80 - 2 * i) for i, price in enumerate(price_points)],
-    "% Expensive": [st.slider(f"% Expensive at {price}€", min_value=0, max_value=100, value=20 + 2 * i) for i, price in enumerate(price_points)],
-    "% Too Expensive": [st.slider(f"% Too Expensive at {price}€", min_value=0, max_value=100, value=5 + 5 * i) for i, price in enumerate(price_points)],
-}
+# SECTION 3: Input PMC and PME from Van Westendorp Analysis
+st.header("3. Input PMC and PME from Van Westendorp Analysis")
+pmc = st.number_input('Point of Marginal Cheapness (PMC) (€):', min_value=0.0, value=70.0)
+pme = st.number_input('Point of Marginal Expensiveness (PME) (€):', min_value=0.0, value=130.0)
 
-# Convert survey data to DataFrame
-df_psm = pd.DataFrame(survey_data).sort_values(by="Price (€)")
+# Input survey details for calculating margin of error and confidence interval
+st.header("4. Survey Analysis for Margin of Error")
+survey_population_size = st.number_input('Enter the Population Size for Survey:', min_value=1, value=10000, step=100)
+survey_sample_size = st.number_input('Enter the Sample Size of the Survey:', min_value=1, value=300, step=10)
 
-# Plot the cumulative curves for Van Westendorp
-fig_psm, ax_psm = plt.subplots(figsize=(10, 6))
-ax_psm.plot(df_psm["Price (€)"], df_psm["% Too Cheap"], label="% Too Cheap", linestyle='--')
-ax_psm.plot(df_psm["Price (€)"], df_psm["% Cheap"], label="% Cheap", linestyle='-')
-ax_psm.plot(df_psm["Price (€)"], df_psm["% Expensive"], label="% Expensive", linestyle='-.')
-ax_psm.plot(df_psm["Price (€)"], df_psm["% Too Expensive"], label="% Too Expensive", linestyle=':')
+# Calculate proportion (p) as 0.5 for maximum variability
+p = 0.5
 
-# Formatting for PSM plot
-ax_psm.set_xlabel("Price (€)")
-ax_psm.set_ylabel("Cumulative Percentage (%)")
-ax_psm.set_title("Van Westendorp Price Sensitivity Curves")
-ax_psm.grid(True)
-ax_psm.legend(loc='best')
+# Calculate Z-score for 95% confidence (1.96)
+z_score = 1.96
 
-# Show PSM plot in Streamlit
-st.pyplot(fig_psm)
+# Calculate the standard margin of error (without FPC)
+margin_of_error = z_score * np.sqrt((p * (1 - p)) / survey_sample_size)
 
-# Calculate PMC and PME
-try:
-    pmc = df_psm[df_psm["% Too Cheap"] <= df_psm["% Expensive"]]["Price (€)"].max()
-    pme = df_psm[df_psm["% Too Expensive"] >= df_psm["% Cheap"]]["Price (€)"].min()
-    st.write(f"**Point of Marginal Cheapness (PMC):** €{pmc}")
-    st.write(f"**Point of Marginal Expensiveness (PME):** €{pme}")
-except Exception as e:
-    st.write("Error calculating PMC and PME:", e)
+# Adjust for finite population if the sample is a significant part of the population
+if survey_sample_size > 0 and survey_population_size > 0 and survey_sample_size < survey_population_size:
+    fpc_factor = np.sqrt((survey_population_size - survey_sample_size) / (survey_population_size - 1))
+    margin_of_error *= fpc_factor
 
-# SECTION 4: Calculate and Visualize Demand and Profit Curves with PMC and PME
-st.header("4. Segment-Based Demand and Profit Curves with PMC and PME")
+# Calculate the confidence interval range for PMC and PME
+confidence_interval_pmc = (pmc - margin_of_error * pmc, pmc + margin_of_error * pmc)
+confidence_interval_pme = (pme - margin_of_error * pme, pme + margin_of_error * pme)
+
+# Display the results for margin of error and confidence intervals
+st.write(f"**Calculated Margin of Error:** ±{margin_of_error * 100:.2f}%")
+st.write(f"**Confidence Interval for PMC:** ({confidence_interval_pmc[0]:.2f}€, {confidence_interval_pmc[1]:.2f}€)")
+st.write(f"**Confidence Interval for PME:** ({confidence_interval_pme[0]:.2f}€, {confidence_interval_pme[1]:.2f}€)")
+
+# SECTION 5: Calculate and Visualize Demand and Profit Curves with PMC and PME
+st.header("5. Segment-Based Demand and Profit Curves with PMC and PME")
 
 # Function to calculate demand and profit for each segment
 def calculate_demand_and_profit(segment, prices):
@@ -146,7 +138,7 @@ for segment in segments:
 
 # Display combined analysis (if relevant)
 if num_segments > 1:
-    st.header("5. Combined Profitability Analysis (Not Directly Combined)")
+    st.header("6. Combined Profitability Analysis")
     st.write("""
         Although combining profits directly is not always feasible due to different demand behaviors, 
         this analysis helps compare how different strategies impact each segment. 
