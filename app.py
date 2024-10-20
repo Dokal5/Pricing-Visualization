@@ -170,4 +170,19 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
         # Calculate profit at each specified price
         specified_profit = (
             specified_price * sales_quantity_at_specified
-            - (fixed_cost + variable_cost * sales_quantity
+            - (fixed_cost + variable_cost * sales_quantity_at_specified)
+        )
+        
+        # Display the results for each specified price
+        st.write(f"**Specified Price {i+1}:** €{specified_price:.2f}")
+        st.write(f"**Sales Quantity at Specified Price {i+1}:** {sales_quantity_at_specified:.2f} units")
+        st.write(f"**Profit at Specified Price {i+1}:** €{specified_profit:.2f}")
+
+    # Display competitor prices if they were added
+    if add_competitors:
+        st.write("### Competitor Prices:")
+        for competitor in competitor_prices:
+            st.write(f"- **{competitor['brand']}** - {competitor['spec']}: €{competitor['price']:.2f}")
+
+# Call the function to update and display the profit curve with break-even analysis
+update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_elasticity, specified_prices, competitor_prices)
