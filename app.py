@@ -20,14 +20,18 @@ segments = []
 
 for i in range(num_segments):
     segment_name = st.text_input(f'Segment {i+1} Name', value=f'Segment {i+1}')
+    population_size = st.number_input(f'Population Size for {segment_name}:', min_value=100, value=10000, step=500)
+    penetration_rate = st.slider(f'Expected Market Penetration for {segment_name} (%):', min_value=1.0, max_value=100.0, value=10.0, step=0.1)
     price_elasticity = st.slider(f'Price Elasticity for {segment_name}:', min_value=0.1, max_value=3.0, value=1.0, step=0.1)
-    max_sales_quantity = st.number_input(f'Max Sales Quantity for {segment_name} (units):', min_value=100, value=1000, step=100)
-    min_sales_quantity = st.number_input(f'Min Sales Quantity for {segment_name} (units):', min_value=0, value=200, step=50)
+    
+    # Calculate max sales quantity based on population size and penetration rate
+    max_sales_quantity = int(population_size * (penetration_rate / 100))
     segments.append({
         'name': segment_name,
         'elasticity': price_elasticity,
         'max_quantity': max_sales_quantity,
-        'min_quantity': min_sales_quantity
+        'population_size': population_size,
+        'penetration_rate': penetration_rate
     })
 
 # SECTION 2: Define Costs
@@ -40,7 +44,8 @@ st.header("3. Segment-Based Demand and Profit Curves")
 
 # Function to calculate demand and profit for each segment
 def calculate_demand_and_profit(segment, prices):
-    demand_slope = (segment['min_quantity'] - segment['max_quantity']) / (max(prices) - min(prices)) * segment['elasticity']
+    # Use max quantity as a basis for demand curve
+    demand_slope = (-segment['max_quantity']) / (max(prices) - min(prices)) * segment['elasticity']
     sales_quantity = segment['max_quantity'] + demand_slope * (prices - min(prices))
     sales_quantity = np.maximum(sales_quantity, 0)  # Ensure no negative demand
     
@@ -83,7 +88,10 @@ st.pyplot(fig)
 # Display additional results for each segment
 for segment in segments:
     st.write(f"### Analysis for {segment['name']}")
-    sales_quantity, profit = calculate_demand_and_profit(segment, np.array([segment['min_quantity'], segment['max_quantity']]))
+    st.write(f"**Population Size:** {segment['population_size']}")
+    st.write(f"**Penetration Rate:** {segment['penetration_rate']}%")
+    st.write(f"**Estimated Max Sales Quantity:** {segment['max_quantity']} units")
+    sales_quantity, profit = calculate_demand_and_profit(segment, prices)
     optimal_price = prices[np.argmax(profit)]
     optimal_profit = np.max(profit)
     st.write(f"**Optimal Price:** €{optimal_price:.2f}")
