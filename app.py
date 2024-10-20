@@ -156,4 +156,4 @@ st.pyplot(fig)
 if user_price > variable_cost:
     st.write(f"### Reflection on Your Price Setting")
     st.write(f"Based on the chosen price point (€{user_price:.2f}), the required break-even quantity is {break_even_quantity:.2f} units.")
-    st.write("**What is your promotion/communication and place/channel strategy that can fulfill this minimum sales target?**")
+    st.write("**how should you design your promotion and place strategy to fulfill this minimum sales target?**")
