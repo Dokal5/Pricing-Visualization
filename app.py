@@ -15,25 +15,29 @@ st.write(
     """
 )
 
-# Define UI elements using Streamlit
+# SECTION 1: Market
+st.header("1. Market")
 # User-defined estimates for market size (TAM) and price elasticity
 market_size = st.number_input('Total Addressable Market (TAM):', min_value=1000, value=10000, step=500)
 price_elasticity = st.slider('Price Elasticity:', min_value=0.1, max_value=2.0, value=1.0, step=0.1)
-
-# User-defined estimate for penetration rate
 penetration_rate = st.slider('Expected Market Penetration Rate (%):', min_value=1.0, max_value=100.0, value=10.0, step=0.1)
 
 # Calculate max sales quantity based on market size and penetration rate
 max_sales_quantity = int(market_size * (penetration_rate / 100))
 min_sales_quantity = 200  # Set as a constant or adjust based on your model needs.
 
-# Input sliders for price and costs
+# SECTION 2: Customer Acceptable Prices
+st.header("2. Minimum and Maximum Acceptable Prices of Customers")
 min_price = st.slider('Minimum Acceptable Price (€):', min_value=1, max_value=500, value=80, step=1)
 max_price = st.slider('Maximum Acceptable Price (€):', min_value=1, max_value=500, value=200, step=1)
+
+# SECTION 3: Costs
+st.header("3. Variable Cost per Product/Service and Fixed Costs")
 variable_cost = st.slider('Variable Cost per Product/Service (€):', min_value=1, max_value=200, value=50, step=1)
 fixed_cost = st.slider('Fixed Cost (€):', min_value=0, max_value=50000, value=10000, step=1000)
 
-# Let the user choose the number of specified price points
+# SECTION 4: Specific Prices
+st.header("4. Set Specific Prices")
 num_price_points = st.slider('Number of Specified Prices:', min_value=1, max_value=5, value=1)
 specified_prices = []
 
