@@ -40,7 +40,8 @@ for i in range(num_price_points):
     specified_price = st.number_input(
         f'Specified Price {i+1} (€):',
         min_value=variable_cost,  # Ensure specified prices are at least equal to the variable cost
-        value=max(variable_cost, 150 + i * 10)
+        value=max(variable_cost, 150 + i * 10),
+        step=1
     )
     specified_prices.append(specified_price)
 
