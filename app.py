@@ -1,7 +1,6 @@
 # Import necessary libraries
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.stats as stats
 import streamlit as st
 
 # Streamlit title and description
