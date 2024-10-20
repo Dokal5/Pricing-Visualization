@@ -50,8 +50,28 @@ for i in range(num_price_points):
     )
     specified_prices.append(specified_price)
 
+# SECTION 5: Direct Competitors' Prices
+st.header("5. Direct Competitors' Prices")
+add_competitors = st.checkbox("Add Competitor Prices?")
+
+competitor_prices = []
+
+if add_competitors:
+    num_competitors = st.slider('Number of Competitors:', min_value=1, max_value=5, value=1)
+    for i in range(num_competitors):
+        brand = st.text_input(f'Brand {i+1}', value=f'Brand {i+1}')
+        product_spec = st.text_input(f'Product Specification {i+1}', value=f'Product Spec {i+1}')
+        competitor_price = st.number_input(
+            f'Price Point {i+1} (€):',
+            min_value=1,
+            max_value=500,
+            value=100 + i * 10,
+            step=1
+        )
+        competitor_prices.append({'brand': brand, 'spec': product_spec, 'price': competitor_price})
+
 # Function to calculate profit, gross margin, and display results
-def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_elasticity, specified_prices):
+def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_elasticity, specified_prices, competitor_prices):
     # Price range to test (from variable cost to max price)
     prices = np.linspace(variable_cost, max_price, 100)
     
@@ -114,6 +134,12 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
         ax1.axvline(x=specified_price, color='magenta', linestyle='--', linewidth=1.5, 
                     label=f'Specified Price {i+1}: €{specified_price:.2f}')
 
+    # Marking competitor prices if any are provided
+    if add_competitors:
+        for i, competitor in enumerate(competitor_prices):
+            ax1.axvline(x=competitor['price'], color='orange', linestyle=':', linewidth=2, 
+                        label=f"{competitor['brand']} - {competitor['spec']}: €{competitor['price']:.2f}")
+
     # Plot the break-even point if available
     if break_even_price is not None and break_even_quantity is not None:
         ax1.scatter(break_even_price, 0, color='orange', label=f'Break-even Price: €{break_even_price:.2f}')
@@ -150,5 +176,11 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
         st.write(f"**Sales Quantity at Specified Price {i+1}:** {sales_quantity_at_specified:.2f} units")
         st.write(f"**Profit at Specified Price {i+1}:** €{specified_profit:.2f}")
 
+    # Display competitor prices if they were added
+    if add_competitors:
+        st.write("### Competitor Prices:")
+        for competitor in competitor_prices:
+            st.write(f"- **{competitor['brand']}** - {competitor['spec']}: €{competitor['price']:.2f}")
+
 # Call the function to update and display the profit curve with break-even analysis
-update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_elasticity, specified_prices)
+update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_elasticity, specified_prices, competitor_prices)
