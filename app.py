@@ -136,7 +136,7 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
 
     # Plot competitor prices as points on the demand curve if any are provided
     if add_competitors:
-        for competitor in competitor_prices:
+        for idx, competitor in enumerate(competitor_prices):
             # Calculate the sales quantity at the competitor's price using the demand curve formula
             comp_quantity = max_sales_quantity + demand_slope * (competitor['price'] - min_price)
             comp_quantity = max(comp_quantity, 0)  # Ensure it is not less than zero
@@ -145,11 +145,11 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
                 competitor['price'], comp_quantity, 'o', color='purple', 
                 label=f"{competitor['brand']} - {competitor['spec']}: €{competitor['price']:.2f}"
             )
-            # Add an annotation for the competitor's price point
+            # Adjust the annotation position dynamically
             ax2.annotate(
                 f"{competitor['brand']}\n{competitor['spec']}\n€{competitor['price']:.2f}",
                 xy=(competitor['price'], comp_quantity),
-                xytext=(competitor['price'] + 5, comp_quantity + 5),
+                xytext=(10 * (-1)**idx, 5 * idx),  # Adjust dynamically to prevent overlap
                 textcoords='offset points',
                 bbox=dict(boxstyle="round,pad=0.3", edgecolor='purple', facecolor='lightyellow'),
                 arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=0.2", color='purple')
