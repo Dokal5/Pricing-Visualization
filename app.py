@@ -17,7 +17,6 @@ st.write(
 
 # SECTION 1: Market
 st.header("1. Market")
-# User-defined estimates for market size (TAM) and price elasticity
 market_size = st.number_input('Total Addressable Market (TAM):', min_value=1000, value=10000, step=500)
 price_elasticity = st.slider('Price Elasticity:', min_value=0.1, max_value=2.0, value=1.0, step=0.1)
 penetration_rate = st.slider('Expected Market Penetration Rate (%):', min_value=1.0, max_value=100.0, value=10.0, step=0.1)
@@ -109,6 +108,11 @@ def update_profit_curve(min_price, max_price, fixed_cost, variable_cost, price_e
 
     # Marking the variable cost on the x-axis with a bold dashed line
     ax1.axvline(x=variable_cost, color='k', linestyle='-', linewidth=2, label=f'Variable Cost: €{variable_cost}')
+
+    # Marking lines for each specified price point
+    for i, specified_price in enumerate(specified_prices):
+        ax1.axvline(x=specified_price, color='magenta', linestyle='--', linewidth=1.5, 
+                    label=f'Specified Price {i+1}: €{specified_price:.2f}')
 
     # Plot the break-even point if available
     if break_even_price is not None and break_even_quantity is not None:
