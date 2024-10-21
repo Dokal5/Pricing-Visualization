@@ -75,7 +75,7 @@ st.write(f"**Calculated Margin of Error:** ±{margin_of_error * 100:.2f}%")
 # Use an expander to show the explanation when the user clicks on it
 with st.expander("How is the Margin of Error calculated?"):
     st.write(
-        """
+        r"""
         The Calculated Margin of Error (MoE) is essential in pricing decisions because it quantifies 
         the uncertainty in survey results, providing a range within which the true values 
         (like PMC and PME) are likely to fall. It helps businesses understand the reliability of 
@@ -84,7 +84,7 @@ with st.expander("How is the Margin of Error calculated?"):
     )
     st.latex(r"\text{MoE} = Z \times \sqrt{\frac{p \times (1 - p)}{n}}")
     st.write(
-        """
+        r"""
         Where:
         - \( Z \): Z-score corresponding to the confidence level (1.96 for 95% confidence level).
         - \( p \): Proportion estimate, set to 0.5 for maximum variability.
@@ -94,7 +94,7 @@ with st.expander("How is the Margin of Error calculated?"):
     st.latex(r"\text{FPC} = \sqrt{\frac{N - n}{N - 1}}")
     st.latex(r"\text{MoE (adjusted)} = \text{MoE} \times \text{FPC}")
     st.write(
-        """
+        r"""
         If the sample size (\( n \)) is a significant proportion of the population size (\( N \)), 
         the finite population correction (FPC) is applied to adjust the margin of error.
         """
