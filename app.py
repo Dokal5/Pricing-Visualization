@@ -47,35 +47,24 @@ if survey_sample_size > 0 and population_size > 0 and survey_sample_size < popul
 confidence_interval_pmc = (pmc - margin_of_error * pmc, pmc + margin_of_error * pmc)
 confidence_interval_pme = (pme - margin_of_error * pme, pme + margin_of_error * pme)
 
-# Display the formula for margin of error
+# Display the formula for margin of error using LaTeX
 st.write("### Margin of Error Calculation")
-st.markdown(
-    r"""
-    The margin of error (MoE) is calculated using the formula:
-    
-    \[
-    \text{MoE} = Z \times \sqrt{\frac{p \times (1 - p)}{n}}
-    \]
-    
+st.latex(r"\text{MoE} = Z \times \sqrt{\frac{p \times (1 - p)}{n}}")
+
+st.write(
+    """
     Where:
     - \( Z \): Z-score corresponding to the confidence level (1.96 for 95% confidence level).
     - \( p \): Proportion estimate, set to 0.5 for maximum variability.
     - \( n \): Sample size.
-    
-    If the sample size (\( n \)) is a significant proportion of the population size (\( N \)), 
-    the finite population correction (FPC) is applied:
-    
-    \[
-    \text{FPC} = \sqrt{\frac{N - n}{N - 1}}
-    \]
-    
-    The adjusted margin of error is then calculated as:
-    
-    \[
-    \text{MoE (adjusted)} = \text{MoE} \times \text{FPC}
-    \]
     """
 )
+
+# Display the formula for Finite Population Correction (FPC)
+st.latex(r"\text{FPC} = \sqrt{\frac{N - n}{N - 1}}")
+
+# Display the formula for adjusted MoE using LaTeX
+st.latex(r"\text{MoE (adjusted)} = \text{MoE} \times \text{FPC}")
 
 # Display the results for margin of error and confidence intervals
 st.write(f"**Calculated Margin of Error:** ±{margin_of_error * 100:.2f}%")
