@@ -21,7 +21,7 @@ population_size = st.number_input(f'Population Size for {segment_name}:', min_va
 # SECTION 2: Define Costs
 st.header("2. Define Costs")
 variable_cost = st.slider('Variable Cost per Product/Service (€):', min_value=1, max_value=200, value=50, step=1)
-fixed_cost = st.slider('Fixed Cost (€):', min_value=0, max_value=50000, value=10000, step=1000)
+fixed_cost = st.number_input('Fixed Cost (€):', min_value=0, value=0, step=1000)
 
 # SECTION 3: Input Van Westendorp PSM Data
 st.header("3. Input PSM Survey Data")
