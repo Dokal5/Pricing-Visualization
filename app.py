@@ -29,6 +29,28 @@ survey_sample_size = st.number_input('Enter the Sample Size of the Survey:', min
 pmc = st.number_input('Point of Marginal Cheapness (PMC) (€):', min_value=0.0, value=70.0)
 pme = st.number_input('Point of Marginal Expensiveness (PME) (€):', min_value=0.0, value=130.0)
 
+# Display explanation of PSM using an expander
+with st.expander("What is the Price Sensitivity Meter (PSM)?"):
+    st.write(
+        """
+        The Van Westendorp Price Sensitivity Meter (PSM) is a technique for determining the 
+        acceptable price range for a product or service based on consumer perceptions. It involves 
+        asking respondents four key questions:
+        
+        1. **At what price would you consider the product to be too expensive to consider?** (Too expensive)
+        2. **At what price would you consider the product to be too cheap, so that you would question its quality?** (Too cheap)
+        3. **At what price would you consider the product to be a bargain—a great buy for the money?** (Cheap)
+        4. **At what price would you consider the product to be getting expensive, but still worth considering?** (Expensive)
+        
+        From the responses, two key points are derived:
+        
+        - **Point of Marginal Cheapness (PMC)**: The price where the proportion of respondents who consider the product "too cheap" equals the proportion who consider it "cheap."
+        - **Point of Marginal Expensiveness (PME)**: The price where the proportion of respondents who consider the product "too expensive" equals the proportion who consider it "expensive."
+        
+        These points help identify the acceptable price range and guide pricing decisions.
+        """
+    )
+
 # Calculate proportion (p) as 0.5 for maximum variability
 p = 0.5
 
