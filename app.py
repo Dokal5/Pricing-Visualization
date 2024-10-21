@@ -44,8 +44,8 @@ with st.expander("What is the Price Sensitivity Meter (PSM)?"):
         
         From the responses, two key points are derived:
         
-        - **Point of Marginal Cheapness (PMC)**: The price where the proportion of respondents who consider the product "too cheap" equals the proportion who consider it "cheap."
-        - **Point of Marginal Expensiveness (PME)**: The price where the proportion of respondents who consider the product "too expensive" equals the proportion who consider it "expensive."
+        - **Point of Marginal Cheapness (PMC)**: The price where the proportion of respondents who consider the product "too cheap" equals the proportion who consider it "expensive."
+        - **Point of Marginal Expensiveness (PME)**: The price where the proportion of respondents who consider the product "too expensive" equals the proportion who consider it "cheap."
         
         These points help identify the acceptable price range and guide pricing decisions.
         """
