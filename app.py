@@ -52,7 +52,7 @@ st.write(f"**Calculated Margin of Error:** ±{margin_of_error * 100:.2f}%")
 st.write(f"**Confidence Interval for PMC:** ({confidence_interval_pmc[0]:.2f}€, {confidence_interval_pmc[1]:.2f}€)")
 st.write(f"**Confidence Interval for PME:** ({confidence_interval_pme[0]:.2f}€, {confidence_interval_pme[1]:.2f}€)")
 
-# SECTION 4: Input Competitor Pricing for  Benchmarking 
+# SECTION 4: Input Competitor Pricing for Benchmarking 
 st.header("4. Input Competitors' Pricing")
 num_competitors = st.slider('Number of Competitors:', min_value=0, max_value=5, value=2)
 competitors = []
