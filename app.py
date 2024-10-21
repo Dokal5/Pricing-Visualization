@@ -74,7 +74,7 @@ with st.expander("How is the Margin of Error calculated?"):
 st.write(f"**Confidence Interval for PMC:** ({confidence_interval_pmc[0]:.2f}€, {confidence_interval_pmc[1]:.2f}€)")
 st.write(f"**Confidence Interval for PME:** ({confidence_interval_pme[0]:.2f}€, {confidence_interval_pme[1]:.2f}€)")
 
-# SECTION 4: Input Competitor Pricing for Benchmarking
+# SECTION 4: Input Competitor Pricing
 st.header("4. Input Competitors' Pricing")
 num_competitors = st.slider('Number of Competitors:', min_value=0, max_value=5, value=2)
 competitors = []
@@ -99,6 +99,22 @@ if user_price > variable_cost:
     st.write(f"**Break-Even Quantity at €{user_price:.2f}:** {break_even_quantity:.2f} units")
 else:
     st.write("The price must be greater than the variable cost to calculate the break-even point.")
+
+# Use an expander to show the explanation for Break-Even Quantity
+with st.expander("How is the Break-Even Quantity calculated?"):
+    st.latex(r"\text{Break-Even Quantity} = \frac{\text{Fixed Costs}}{\text{Price} - \text{Variable Cost}}")
+    st.write(
+        """
+        The break-even quantity tells you the number of units you need to sell at a given price
+        to cover all fixed and variable costs.
+        
+        - **Fixed Costs**: Costs that do not change with the number of units produced or sold (e.g., rent, salaries).
+        - **Price**: The selling price per unit.
+        - **Variable Cost**: The cost associated with producing one additional unit.
+        
+        The formula divides the total fixed costs by the contribution margin (Price - Variable Cost).
+        """
+    )
 
 # SECTION 6: Calculate and Visualize Demand and Profit Curves with PMC, PME, and Competitors
 st.header("6. Demand and Profit Curves with PMC, PME, and Competitors")
