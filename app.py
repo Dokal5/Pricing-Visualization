@@ -47,27 +47,30 @@ if survey_sample_size > 0 and population_size > 0 and survey_sample_size < popul
 confidence_interval_pmc = (pmc - margin_of_error * pmc, pmc + margin_of_error * pmc)
 confidence_interval_pme = (pme - margin_of_error * pme, pme + margin_of_error * pme)
 
-# Display the formula for margin of error using LaTeX
-st.write("### Margin of Error Calculation")
-st.latex(r"\text{MoE} = Z \times \sqrt{\frac{p \times (1 - p)}{n}}")
-
-st.write(
-    """
-    Where:
-    - \( Z \): Z-score corresponding to the confidence level (1.96 for 95% confidence level).
-    - \( p \): Proportion estimate, set to 0.5 for maximum variability.
-    - \( n \): Sample size.
-    """
-)
-
-# Display the formula for Finite Population Correction (FPC)
-st.latex(r"\text{FPC} = \sqrt{\frac{N - n}{N - 1}}")
-
-# Display the formula for adjusted MoE using LaTeX
-st.latex(r"\text{MoE (adjusted)} = \text{MoE} \times \text{FPC}")
-
-# Display the results for margin of error and confidence intervals
+# Display the margin of error and provide a collapsible explanation
 st.write(f"**Calculated Margin of Error:** ±{margin_of_error * 100:.2f}%")
+
+# Use an expander to show the explanation when the user clicks on it
+with st.expander("How is the Margin of Error calculated?"):
+    st.latex(r"\text{MoE} = Z \times \sqrt{\frac{p \times (1 - p)}{n}}")
+    st.write(
+        """
+        Where:
+        - \( Z \): Z-score corresponding to the confidence level (1.96 for 95% confidence level).
+        - \( p \): Proportion estimate, set to 0.5 for maximum variability.
+        - \( n \): Sample size.
+        """
+    )
+    st.latex(r"\text{FPC} = \sqrt{\frac{N - n}{N - 1}}")
+    st.latex(r"\text{MoE (adjusted)} = \text{MoE} \times \text{FPC}")
+    st.write(
+        """
+        If the sample size (\( n \)) is a significant proportion of the population size (\( N \)), 
+        the finite population correction (FPC) is applied to adjust the margin of error.
+        """
+    )
+
+# Display the results for confidence intervals
 st.write(f"**Confidence Interval for PMC:** ({confidence_interval_pmc[0]:.2f}€, {confidence_interval_pmc[1]:.2f}€)")
 st.write(f"**Confidence Interval for PME:** ({confidence_interval_pme[0]:.2f}€, {confidence_interval_pme[1]:.2f}€)")
 
