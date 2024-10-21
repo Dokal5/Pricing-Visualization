@@ -21,7 +21,7 @@ population_size = st.number_input(f'Population Size for {segment_name}:', min_va
 # SECTION 2: Define Costs
 st.header("2. Define Costs")
 variable_cost = st.slider('Variable Cost per Product/Service (€):', min_value=1, max_value=200, value=50, step=1)
-fixed_cost = st.number_input('Fixed Cost (€):', min_value=0, value=10000, step=1000)
+fixed_cost = st.number_input('Fixed Cost (€):', min_value=0, value=0, step=1000)
 
 # SECTION 3: Input Van Westendorp PSM Data
 st.header("3. Input PSM Survey Data")
@@ -106,13 +106,24 @@ st.write(f"**Confidence Interval for PME:** ({confidence_interval_pme[0]:.2f}€
 
 # SECTION 4: Input Competitor Pricing for Benchmarking
 st.header("4. Input Competitors' Pricing for Benchmarking")
-num_competitors = st.slider('Number of Competitors:', min_value=0, max_value=5, value=2)
+
+# Default competitors' data from the sneaker market
+default_competitors = [
+    {'brand': 'Nike', 'spec': 'Air Max 270, Casual Running Shoe', 'price': 140},
+    {'brand': 'Adidas', 'spec': 'Ultraboost 21, High-performance Running Shoe', 'price': 180},
+    {'brand': 'Puma', 'spec': 'RS-X3, Retro-style Training Sneaker', 'price': 120},
+    {'brand': 'New Balance', 'spec': '990v5, Classic Athletic Shoe', 'price': 175},
+    {'brand': 'Converse', 'spec': 'Chuck Taylor All Star, High-top Casual Sneaker', 'price': 90}
+]
+
+num_competitors = st.slider('Number of Competitors:', min_value=0, max_value=len(default_competitors), value=len(default_competitors))
 competitors = []
 
 for i in range(num_competitors):
-    brand = st.text_input(f'Competitor {i + 1} Brand', value=f'Brand {i + 1}')
-    product_spec = st.text_input(f'Product Specification for {brand}', value=f'Spec {i + 1}')
-    competitor_price = st.number_input(f'Price for {brand} ({product_spec}) (€):', min_value=0.0, value=79.0)
+    competitor = default_competitors[i]
+    brand = st.text_input(f'Competitor {i + 1} Brand', value=competitor['brand'])
+    product_spec = st.text_input(f'Product Specification for {brand}', value=competitor['spec'])
+    competitor_price = st.number_input(f'Price for {brand} ({product_spec}) (€):', min_value=0.0, value=competitor['price'])
     competitors.append({
         'brand': brand,
         'spec': product_spec,
@@ -190,12 +201,13 @@ ax1.fill_betweenx([0, max(sales_quantity) * 2], confidence_interval_pmc[0], conf
 ax1.fill_betweenx([0, max(sales_quantity) * 2], confidence_interval_pme[0], confidence_interval_pme[1], color='purple', alpha=0.2, label='Confidence Interval for PME')
 
 # Plot competitor prices as points
-for competitor in competitors:
-    ax1.scatter(competitor['price'], 0, color='green', label=f"{competitor['brand']} ({competitor['spec']}): €{competitor['price']}", zorder=5)
+for idx, competitor in enumerate(competitors):
+    y_offset = -50 * (idx + 1)  # Adjust y position to avoid overlap
+    ax1.scatter(competitor['price'], y_offset, color='green', label=f"{competitor['brand']} ({competitor['spec']}): €{competitor['price']}", zorder=5)
     ax1.annotate(f"{competitor['brand']}\n{competitor['price']}€",
-                 xy=(competitor['price'], 0), 
-                 xytext=(competitor['price'], 100),
-                 textcoords='offset points',
+                 xy=(competitor['price'], y_offset), 
+                 xytext=(competitor['price'], y_offset - 30),
+                 textcoords='data',
                  arrowprops=dict(arrowstyle="->", color='green'),
                  bbox=dict(boxstyle="round,pad=0.3", edgecolor='black', facecolor='lightyellow'))
 
