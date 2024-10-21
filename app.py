@@ -44,8 +44,8 @@ with st.expander("What is the Price Sensitivity Meter (PSM)?"):
         
         From the responses, two key points are derived:
         
-        - **Point of Marginal Cheapness (PMC)**: The price where the proportion of respondents who consider the product "too cheap" equals the proportion who consider it "expensive."
-        - **Point of Marginal Expensiveness (PME)**: The price where the proportion of respondents who consider the product "too expensive" equals the proportion who consider it "cheap."
+        - **Point of Marginal Cheapness (PMC)**: The price where the proportion of respondents who consider the product "too cheap" equals the proportion who consider it "cheap."
+        - **Point of Marginal Expensiveness (PME)**: The price where the proportion of respondents who consider the product "too expensive" equals the proportion who consider it "expensive."
         
         These points help identify the acceptable price range and guide pricing decisions.
         """
@@ -127,6 +127,27 @@ user_price = st.number_input('Enter Your Price Setting (€):', min_value=0.0, v
 if user_price > variable_cost:
     break_even_quantity = fixed_cost / (user_price - variable_cost)
     st.write(f"**Break-Even Quantity at €{user_price:.2f}:** {break_even_quantity:.2f} units")
+    
+    # Display a strategic tip if break-even quantity is more than 20% of the market size
+    if break_even_quantity > 0.2 * population_size:
+        with st.expander("Tip: Strategies for Reaching Break-Even Point"):
+            st.write(
+                """
+                If your break-even quantity is high compared to your target market size, achieving profitability 
+                may be challenging. Consider the following strategies to improve your situation:
+                
+                1. **Expand Your Market**: Look for ways to reach a larger audience. This could involve 
+                   exploring new geographical markets, diversifying your product range, or increasing marketing efforts.
+                
+                2. **Reduce Fixed Costs**: Reevaluate your operational expenses and explore opportunities to 
+                   cut down costs. This could include negotiating with suppliers, reducing rent, or outsourcing non-core functions.
+                
+                3. **Combine Strategies**: A balanced approach, where you both expand your market reach and 
+                   optimize your fixed costs, can often yield the best results.
+                
+                These adjustments can help make your pricing strategy more sustainable and achieve the break-even point faster.
+                """
+            )
 else:
     st.write("The price must be greater than the variable cost to calculate the break-even point.")
 
