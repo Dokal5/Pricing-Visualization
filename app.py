@@ -104,7 +104,7 @@ with st.expander("How is the Margin of Error calculated?"):
 st.write(f"**Confidence Interval for PMC:** ({confidence_interval_pmc[0]:.2f}€, {confidence_interval_pmc[1]:.2f}€)")
 st.write(f"**Confidence Interval for PME:** ({confidence_interval_pme[0]:.2f}€, {confidence_interval_pme[1]:.2f}€)")
 
-# SECTION 4: Input Competitor Pricing
+# SECTION 4: Input Competitor Pricing for Benchmarking
 st.header("4. Input Competitors' Pricing")
 num_competitors = st.slider('Number of Competitors:', min_value=0, max_value=5, value=2)
 competitors = []
@@ -224,5 +224,5 @@ st.pyplot(fig)
 if user_price > variable_cost:
     st.write(f"### Reflection on Your Price Setting")
     st.write(f"Based on the chosen price point (€{user_price:.2f}), the required break-even quantity is {break_even_quantity:.2f} units.")
-    st.write("**What is your promotion/communication and place/channel strategy that can fulfill this minimum sales target?**")
-    st.write("**Based on the defined price point, can you develop pricing bundles or tier pricing that can facilitate better value capturing?**")
+    st.write("**1. Based on the defined price point, can you develop pricing bundles or tier pricing that can facilitate better value capturing?**")
+    st.write("**2. What is your promotion/communication and place/channel strategy that can fulfill this minimum sales target?**")
