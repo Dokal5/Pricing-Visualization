@@ -112,7 +112,7 @@ competitors = []
 for i in range(num_competitors):
     brand = st.text_input(f'Competitor {i + 1} Brand', value=f'Brand {i + 1}')
     product_spec = st.text_input(f'Product Specification for {brand}', value=f'Spec {i + 1}')
-    competitor_price = st.number_input(f'Price for {brand} ({product_spec}) (€):', min_value=0.0, value=100.0)
+    competitor_price = st.number_input(f'Price for {brand} ({product_spec}) (€):', min_value=0.0, value=79.0)
     competitors.append({
         'brand': brand,
         'spec': product_spec,
