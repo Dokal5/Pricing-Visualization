@@ -127,27 +127,6 @@ user_price = st.number_input('Enter Your Price Setting (€):', min_value=0.0, v
 if user_price > variable_cost:
     break_even_quantity = fixed_cost / (user_price - variable_cost)
     st.write(f"**Break-Even Quantity at €{user_price:.2f}:** {break_even_quantity:.2f} units")
-    
-    # Display a strategic tip if break-even quantity is more than 20% of the market size
-    if break_even_quantity > 0.2 * population_size:
-        with st.expander("Tip: Strategies for Reaching Break-Even Point"):
-            st.write(
-                """
-                If your break-even quantity is high compared to your target market size, achieving profitability 
-                may be challenging. Consider the following strategies to improve your situation:
-                
-                1. **Expand Your Market**: Look for ways to reach a larger audience. This could involve 
-                   exploring new geographical markets, diversifying your product range, or increasing marketing efforts.
-                
-                2. **Reduce Fixed Costs**: Reevaluate your operational expenses and explore opportunities to 
-                   cut down costs. This could include negotiating with suppliers, reducing rent, or outsourcing non-core functions.
-                
-                3. **Combine Strategies**: A balanced approach, where you both expand your market reach and 
-                   optimize your fixed costs, can often yield the best results.
-                
-                These adjustments can help make your pricing strategy more sustainable and achieve the break-even point faster.
-                """
-            )
 else:
     st.write("The price must be greater than the variable cost to calculate the break-even point.")
 
@@ -242,8 +221,31 @@ ax1.legend(loc='upper right')
 st.pyplot(fig)
 
 # Display additional questions for user reflection
+st.header("Reflection on Your Price Setting")
+if np.max(profit) < 0:
+    st.write("### It is not possible to break even with the current pricing and cost structure.")
 if user_price > variable_cost:
-    st.write(f"### Reflection on Your Price Setting")
     st.write(f"Based on the chosen price point (€{user_price:.2f}), the required break-even quantity is {break_even_quantity:.2f} units.")
+    
+    # Display the strategic tip if break-even quantity is high compared to the population size
+    if break_even_quantity > 0.2 * population_size:
+        with st.expander("Tip: Strategies for Reaching Break-Even Point"):
+            st.write(
+                """
+                If your break-even quantity is high compared to your target market size, achieving profitability 
+                may be challenging. Consider the following strategies to improve your situation:
+                
+                1. **Expand Your Market**: Look for ways to reach a larger audience. This could involve 
+                   exploring new geographical markets, diversifying your product range, or increasing marketing efforts.
+                
+                2. **Reduce Fixed Costs**: Reevaluate your operational expenses and explore opportunities to 
+                   cut down costs. This could include negotiating with suppliers, reducing rent, or outsourcing non-core functions.
+                
+                3. **Combine Strategies**: A balanced approach, where you both expand your market reach and 
+                   optimize your fixed costs, can often yield the best results.
+                
+                These adjustments can help make your pricing strategy more sustainable and achieve the break-even point faster.
+                """
+            )
     st.write("**1. Based on the defined price point, can you develop pricing bundles or tier pricing that can facilitate better value capturing?**")
     st.write("**2. What is your promotion/communication and place/channel strategy that can fulfill this minimum sales target?**")
