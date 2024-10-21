@@ -74,6 +74,14 @@ st.write(f"**Calculated Margin of Error:** ±{margin_of_error * 100:.2f}%")
 
 # Use an expander to show the explanation when the user clicks on it
 with st.expander("How is the Margin of Error calculated?"):
+    st.write(
+        """
+        The Calculated Margin of Error (MoE) is essential in pricing decisions because it quantifies 
+        the uncertainty in survey results, providing a range within which the true values 
+        (like PMC and PME) are likely to fall. It helps businesses understand the reliability of 
+        their estimates, especially when making data-driven pricing decisions.
+        """
+    )
     st.latex(r"\text{MoE} = Z \times \sqrt{\frac{p \times (1 - p)}{n}}")
     st.write(
         """
