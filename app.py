@@ -223,7 +223,7 @@ st.pyplot(fig)
 # Display additional questions for user reflection
 st.header("Reflection on Your Price Setting")
 if np.max(profit) < 0:
-    st.write("### It is not possible to break even with the current pricing and cost structure.")
+    st.error("### It is not possible to break even with the current pricing and cost structure.")
 if user_price > variable_cost:
     st.write(f"Based on the chosen price point (€{user_price:.2f}), the required break-even quantity is {break_even_quantity:.2f} units.")
     
