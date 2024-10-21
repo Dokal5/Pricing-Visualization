@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 # Streamlit title and description
-st.title("Pricing and PSM Price Sensitivity Analysis Tool")
+st.title("Pricing and Price Sensitivity Analysis Tool")
 st.write(
     """
     This tool helps analyze price sensitivity and survey data for pricing decisions.
@@ -47,12 +47,42 @@ if survey_sample_size > 0 and population_size > 0 and survey_sample_size < popul
 confidence_interval_pmc = (pmc - margin_of_error * pmc, pmc + margin_of_error * pmc)
 confidence_interval_pme = (pme - margin_of_error * pme, pme + margin_of_error * pme)
 
+# Display the formula for margin of error
+st.write("### Margin of Error Calculation")
+st.markdown(
+    r"""
+    The margin of error (MoE) is calculated using the formula:
+    
+    \[
+    \text{MoE} = Z \times \sqrt{\frac{p \times (1 - p)}{n}}
+    \]
+    
+    Where:
+    - \( Z \): Z-score corresponding to the confidence level (1.96 for 95% confidence level).
+    - \( p \): Proportion estimate, set to 0.5 for maximum variability.
+    - \( n \): Sample size.
+    
+    If the sample size (\( n \)) is a significant proportion of the population size (\( N \)), 
+    the finite population correction (FPC) is applied:
+    
+    \[
+    \text{FPC} = \sqrt{\frac{N - n}{N - 1}}
+    \]
+    
+    The adjusted margin of error is then calculated as:
+    
+    \[
+    \text{MoE (adjusted)} = \text{MoE} \times \text{FPC}
+    \]
+    """
+)
+
 # Display the results for margin of error and confidence intervals
 st.write(f"**Calculated Margin of Error:** ±{margin_of_error * 100:.2f}%")
 st.write(f"**Confidence Interval for PMC:** ({confidence_interval_pmc[0]:.2f}€, {confidence_interval_pmc[1]:.2f}€)")
 st.write(f"**Confidence Interval for PME:** ({confidence_interval_pme[0]:.2f}€, {confidence_interval_pme[1]:.2f}€)")
 
-# SECTION 4: Input Competitor Pricing for Benchmarking 
+# SECTION 4: Input Competitor Pricing
 st.header("4. Input Competitors' Pricing")
 num_competitors = st.slider('Number of Competitors:', min_value=0, max_value=5, value=2)
 competitors = []
@@ -156,4 +186,4 @@ st.pyplot(fig)
 if user_price > variable_cost:
     st.write(f"### Reflection on Your Price Setting")
     st.write(f"Based on the chosen price point (€{user_price:.2f}), the required break-even quantity is {break_even_quantity:.2f} units.")
-    st.write("**how should you design your promotion and place strategy to fulfill this minimum sales target?**")
+    st.write("**What is your promotion/communication and place/channel strategy that can fulfill this minimum sales target?**")
