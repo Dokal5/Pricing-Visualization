@@ -109,21 +109,21 @@ st.header("4. Input Competitors' Pricing for Benchmarking")
 
 # Default competitors' data from the sneaker market
 default_competitors = [
-    {'brand': 'Nike', 'spec': 'Air Max 270, Casual Running Shoe', 'price': 140},
-    {'brand': 'Adidas', 'spec': 'Ultraboost 21, High-performance Running Shoe', 'price': 180},
-    {'brand': 'Puma', 'spec': 'RS-X3, Retro-style Training Sneaker', 'price': 120},
-    {'brand': 'New Balance', 'spec': '990v5, Classic Athletic Shoe', 'price': 175},
-    {'brand': 'Converse', 'spec': 'Chuck Taylor All Star, High-top Casual Sneaker', 'price': 90}
+    {'brand': 'Nike', 'spec': 'Air Max 270', 'price': 140.0},
+    {'brand': 'Adidas', 'spec': 'Ultraboost 21', 'price': 180.0},
+    {'brand': 'Puma', 'spec': 'RS-X3', 'price': 120.0},
+    {'brand': 'New Balance', 'spec': '990v5', 'price': 175.0},
+    {'brand': 'Converse', 'spec': 'Chuck Taylor', 'price': 90.0}
 ]
 
-num_competitors = st.slider('Number of Competitors:', min_value=0, max_value=len(default_competitors), value=len(default_competitors))
+num_competitors = st.slider('Number of Competitors:', min_value=0, max_value=5, value=5)
 competitors = []
 
 for i in range(num_competitors):
     competitor = default_competitors[i]
     brand = st.text_input(f'Competitor {i + 1} Brand', value=competitor['brand'])
     product_spec = st.text_input(f'Product Specification for {brand}', value=competitor['spec'])
-    competitor_price = st.number_input(f'Price for {brand} ({product_spec}) (€):', min_value=0.0, value=float(competitor['price']))
+    competitor_price = st.number_input(f'Price for {brand} ({product_spec}) (€):', min_value=0.0, value=competitor['price'], step=0.01)
     competitors.append({
         'brand': brand,
         'spec': product_spec,
