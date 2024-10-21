@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 # Streamlit title and description
-st.title("Pricing and Price Sensitivity Analysis Tool")
+st.title("Pricing and PSM Price Sensitivity Analysis Tool")
 st.write(
     """
     This tool helps analyze price sensitivity and survey data for pricing decisions.
