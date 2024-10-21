@@ -123,13 +123,13 @@ for i in range(num_competitors):
     competitor = default_competitors[i]
     brand = st.text_input(f'Competitor {i + 1} Brand', value=competitor['brand'])
     product_spec = st.text_input(f'Product Specification for {brand}', value=competitor['spec'])
-    competitor_price = st.number_input(f'Price for {brand} ({product_spec}) (€):', min_value=0.0, value=competitor['price'])
+    competitor_price = st.number_input(f'Price for {brand} ({product_spec}) (€):', min_value=0.0, value=float(competitor['price']))
     competitors.append({
         'brand': brand,
         'spec': product_spec,
         'price': competitor_price
     })
-
+    
 # SECTION 5: User-Determined Price and Break-Even Analysis
 st.header("5. Set Your Price and Calculate Break-Even Quantity")
 user_price = st.number_input('Enter Your Price Setting (€):', min_value=0.0, value=100.0)
